@@ -1,4 +1,4 @@
-# Full Stack Implementation Exercise
+## Full Stack Implementation Exercise
 
 ## 1. Requirements / Intro
 
