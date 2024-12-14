@@ -1,7 +1,19 @@
 <div class="container mt-4">
   <h2>{{ archived ? 'Notas Archivadas' : 'Notas Activas' }}</h2>
   
-  
+  <div class="mb-3">
+    <label for="filterTag" class="form-label">Filtrar por etiqueta</label>
+    <select
+      id="filterTag"
+      class="form-select"
+      [(ngModel)]="selectedTag"
+      (change)="applyFilter()"
+    >
+      <option value="">Todas las etiquetas</option>
+      <option *ngFor="let tag of uniqueTags" [value]="tag">{{ tag }}</option>
+    </select>
+  </div>
+
   <div *ngIf="notes.length > 0; else emptyList" class="row">
     <div *ngFor="let note of notes" class="col-md-4">
       <div class="card mb-3">
@@ -32,6 +44,14 @@
           >
             Edit Note
           </button>
+
+        <button
+          class="btn btn-danger"
+          (click)="delete(note.id)"
+        >
+          Delete Note
+        </button>
+
             <button
               *ngIf="archived"
               class="btn btn-sm btn-success"

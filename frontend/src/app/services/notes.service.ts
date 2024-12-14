@@ -10,8 +10,12 @@ export class NotesService {
 
   constructor(private http: HttpClient) {}
 
-  getNotes(archived: boolean = false): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}?archived=${archived}`);
+  getNotes(archived: boolean, tag?: string): Observable<any[]> {
+    let url = `${this.apiUrl}?archived=${archived}`;
+    if (tag) {
+      url += `&tag=${tag}`;
+    }
+    return this.http.get<any[]>(url);
   }
   
   createNote(note: any): Observable<any> {
