@@ -10,10 +10,10 @@ export class NotesService {
 
   constructor(private http: HttpClient) {}
 
-  getNotes(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  getNotes(archived: boolean = false): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}?archived=${archived}`);
   }
-
+  
   createNote(note: any): Observable<any> {
     return this.http.post(this.apiUrl, note);
   }
@@ -24,5 +24,17 @@ export class NotesService {
 
   deleteNote(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  archiveNote(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}/archive`, {});
+  }
+
+  getNoteById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+  
+  unarchiveNote(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}/unarchive`, {});
   }
 }

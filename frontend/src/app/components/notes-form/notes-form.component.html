@@ -1,1 +1,44 @@
-<p>notes-form works!</p>
+<div class="container mt-5">
+    <h2>{{ isEditMode ? 'Editar Nota' : 'Crear Nueva Nota' }}</h2>
+    <form (ngSubmit)="saveNote()">
+      <div class="mb-3">
+        <label for="title" class="form-label">Título</label>
+        <input
+          type="text"
+          id="title"
+          class="form-control"
+          [(ngModel)]="title"
+          name="title"
+          required
+          placeholder="Escribe el título de la nota"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="content" class="form-label">Contenido</label>
+        <textarea
+          id="content"
+          class="form-control"
+          [(ngModel)]="content"
+          name="content"
+          rows="4"
+          required
+          placeholder="Escribe el contenido de la nota"
+        ></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="tags" class="form-label">Etiquetas (separadas por coma)</label>
+        <input
+          type="text"
+          id="tags"
+          class="form-control"
+          [(ngModel)]="tags"
+          name="tags"
+          placeholder="Ejemplo: Importante, Trabajo"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary">
+        {{ isEditMode ? 'Guardar Cambios' : 'Crear Nota' }}
+      </button>
+    </form>
+  </div>
+  

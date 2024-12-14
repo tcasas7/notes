@@ -47,7 +47,11 @@ export class Note {
   })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   @ApiProperty({
     example: '2024-12-13T12:30:00Z',
     description: 'Fecha de la última actualización de la nota',

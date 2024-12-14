@@ -7,13 +7,16 @@ import {
   Delete,
   Param,
   Body,
+  HttpCode,
+  Patch,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiParam } from '@nestjs/swagger';
-import { NotesService } from './notes.service';
+import { NotesService } from './services/notes.service';
 import { CreateNoteDto } from './DTOS/create-note.dto';
 import { UpdateNoteDto } from './DTOS/update-note.dto';
 import { Tag } from './tag.entity';
-
+import { Note } from './note.entity';
 
 
 @ApiTags('Notes') 
@@ -40,8 +43,7 @@ export class NotesController {
     },
   })
   async create(@Body() createNoteDto: CreateNoteDto) {
-    
-    const tags = createNoteDto.tags.map((tagName) => {
+     const tags = createNoteDto.tags.map((tagName) => {
       const tag = new Tag();
       tag.name = tagName; 
       return tag; 
@@ -51,8 +53,9 @@ export class NotesController {
   }
 
   @Get()
-  findAll() {
-    return this.notesService.findAll();
+  async findAll(@Query('archived') archived: string): Promise<Note[]> {
+    const isArchived = archived === 'true'; 
+    return this.notesService.getAllNotes(isArchived);
   }
 
   @Get(':id')
@@ -61,7 +64,7 @@ export class NotesController {
     description: 'ID of the note to retrieve',
     example: 1,
   })
-  findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: number): Promise<Note> {
     return this.notesService.findOne(id);
   }
 
@@ -71,6 +74,7 @@ export class NotesController {
     description: 'ID of the note to update',
     example: 1,
   })
+
   @ApiBody({
     description: 'Data required to update the note',
     schema: {
@@ -88,18 +92,13 @@ export class NotesController {
       },
     },
   })
-  async update(
-    @Param('id') id: number,
-    @Body() updateNoteDto: UpdateNoteDto,
-  ) {
-    
+    async update(@Param('id') id: number, @Body() updateNoteDto: UpdateNoteDto): Promise<void> {
     const tags: Tag[] = updateNoteDto.tags.map((tagName) => {
       const tag = new Tag();
-      tag.name = tagName; 
-      return tag; 
+      tag.name = tagName;
+      return tag;
     });
-  
-  
+
     return this.notesService.update(id, { ...updateNoteDto, tags });
   }
 
@@ -109,7 +108,30 @@ export class NotesController {
     description: 'ID of the note to delete',
     example: 1,
   })
-  remove(@Param('id') id: number) {
+
+  @HttpCode(204)
+  async remove(@Param('id') id: number): Promise<void> {
     return this.notesService.remove(id);
   }
+
+  @Patch(':id/archive')
+  @ApiParam({
+    name: 'id',
+    description: 'ID of the note to archive',
+    example: 1,
+  })
+  async archive(@Param('id') id: number): Promise<Note> {
+    return this.notesService.archiveNote(id);
+  }
+
+  @Patch(':id/unarchive')
+  @ApiParam({
+    name: 'id',
+    description: 'ID of the note to unarchive',
+    example: 1,
+  })
+  async unarchive(@Param('id') id: number): Promise<Note> {
+    return this.notesService.unarchiveNote(id);
+  }
+
 }
