@@ -15,8 +15,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class NotesListComponent implements OnInit {
   notes: { id:number; title: string; content: string; tags: { name: string }[] }[] = []; 
+  filteredNotes: { id: number; title: string; content: string; tags: { name: string }[] }[] = [];
   uniqueTags: string[] = [];
   selectedTag: string = '';
+  searchTerm: string = '';
   archived: boolean = false; 
 
   constructor(
@@ -35,6 +37,7 @@ export class NotesListComponent implements OnInit {
     this.notesService.getNotes(this.archived).subscribe(
       (data) => {
         this.notes = data; 
+        this.filteredNotes = data;
         this.extractUniqueTags();
       },
       (error) => {
@@ -48,17 +51,22 @@ export class NotesListComponent implements OnInit {
     this.uniqueTags = [...new Set(allTags)];
   }
 
-
-  applyFilter(): void {
-    if (this.selectedTag) {
-      this.notes = this.notes.filter((note) =>
-        note.tags.some((tag) => tag.name === this.selectedTag)
-      );
-    } else {
-      this.loadNotes(); 
-    }
+  applySearch(): void {
+    const searchTermLower = this.searchTerm.toLowerCase();
+    this.filteredNotes = this.notes.filter(
+      (note) =>
+        note.title.toLowerCase().includes(searchTermLower) &&
+        (this.selectedTag ? note.tags.some((tag) => tag.name === this.selectedTag) : true)
+    );
   }
-
+  
+  applyFilter(): void {
+    this.filteredNotes = this.notes.filter((note) =>
+      this.selectedTag ? note.tags.some((tag) => tag.name === this.selectedTag) : true
+    );
+    this.applySearch();
+  }
+  
   archive(id: number): void {
     console.log('Archiving note with id:', id);
     this.notesService.archiveNote(id).subscribe(

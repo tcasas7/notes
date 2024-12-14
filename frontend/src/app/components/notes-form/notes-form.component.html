@@ -1,8 +1,9 @@
 <div class="container mt-5">
-    <h2>{{ isEditMode ? 'Editar Nota' : 'Crear Nueva Nota' }}</h2>
+    <h2>{{ isEditMode ? 'Edit note' : 'Create new note' }}</h2>
     <form (ngSubmit)="saveNote()">
+
       <div class="mb-3">
-        <label for="title" class="form-label">Título</label>
+        <label for="title" class="form-label">Title</label>
         <input
           type="text"
           id="title"
@@ -10,11 +11,18 @@
           [(ngModel)]="title"
           name="title"
           required
-          placeholder="Escribe el título de la nota"
+          placeholder="Wruite the title of the note"
+          #titleInput="ngModel"
         />
+
+      <div *ngIf="titleInput.invalid" class="text-danger">
+          The title is mandatory.
+        </div>
       </div>
+
+      
       <div class="mb-3">
-        <label for="content" class="form-label">Contenido</label>
+        <label for="content" class="form-label">Content</label>
         <textarea
           id="content"
           class="form-control"
@@ -22,22 +30,28 @@
           name="content"
           rows="4"
           required
-          placeholder="Escribe el contenido de la nota"
+          placeholder="Write the content of the note"
+          #contentInput="ngModel"
         ></textarea>
       </div>
+
+      <div *ngIf="contentInput.invalid" class="text-danger">
+        The content is mandatory.
+      </div>
+
       <div class="mb-3">
-        <label for="tags" class="form-label">Etiquetas (separadas por coma)</label>
+        <label for="tags" class="form-label">Tags</label>
         <input
           type="text"
           id="tags"
           class="form-control"
           [(ngModel)]="tags"
           name="tags"
-          placeholder="Ejemplo: Importante, Trabajo"
+          placeholder="Example Important, Work, Homework"
         />
       </div>
       <button type="submit" class="btn btn-primary">
-        {{ isEditMode ? 'Guardar Cambios' : 'Crear Nota' }}
+        {{ isEditMode ? 'Save changes' : 'Create note' }}
       </button>
     </form>
   </div>

@@ -1,0 +1,27 @@
+.container {
+    margin-top: 20px;
+  }
+  
+  .card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  
+  .card-body {
+    padding: 15px;
+  }
+  
+  .badge {
+    font-size: 0.85rem;
+  }
+  
+  .btn {
+    font-size: 0.9rem;
+    margin-right: 5px;
+  }
+  

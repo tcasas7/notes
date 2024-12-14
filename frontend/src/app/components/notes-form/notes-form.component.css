@@ -1,0 +1,13 @@
+.card {
+    height: 100%; /* Permite que las tarjetas ocupen toda la altura disponible */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  

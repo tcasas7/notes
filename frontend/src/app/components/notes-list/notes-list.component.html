@@ -1,31 +1,39 @@
 <div class="container mt-4">
-  <h2>{{ archived ? 'Notas Archivadas' : 'Notas Activas' }}</h2>
+  <h2>{{ archived ? 'Archived Notes' : 'Active Notes' }}</h2>
+
+  <div class="mb-3">
+    <label for="search" class="form-label">Search by title</label>
+    <input
+      type="text"
+      id="search"
+      class="form-control"
+      [(ngModel)]="searchTerm"
+      placeholder="Search by title"
+      (input)="applySearch()"
+    />
+  </div>
   
   <div class="mb-3">
-    <label for="filterTag" class="form-label">Filtrar por etiqueta</label>
+    <label for="filterTag" class="form-label">Filter by tag</label>
     <select
       id="filterTag"
       class="form-select"
       [(ngModel)]="selectedTag"
       (change)="applyFilter()"
     >
-      <option value="">Todas las etiquetas</option>
+      <option value="">All tags</option>
       <option *ngFor="let tag of uniqueTags" [value]="tag">{{ tag }}</option>
     </select>
   </div>
 
-  <div *ngIf="notes.length > 0; else emptyList" class="row">
-    <div *ngFor="let note of notes" class="col-md-4">
+  <div *ngIf="filteredNotes.length > 0; else emptyList" class="row">
+    <div *ngFor="let note of filteredNotes" class="col-md-4">
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">{{ note.title }}</h5>
           <p class="card-text">{{ note.content }}</p>
           <div>
-            
-            <span
-              *ngFor="let tag of note.tags"
-              class="badge bg-primary me-1"
-            >
+            <span *ngFor="let tag of note.tags" class="badge bg-primary me-1">
               {{ tag.name }}
             </span>
           </div>
@@ -67,6 +75,6 @@
 
   
   <ng-template #emptyList>
-    <p class="text-center text-muted">No hay notas para mostrar.</p>
+    <p class="text-center text-muted">There are no notes to show.</p>
   </ng-template>
 </div>
