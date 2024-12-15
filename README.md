@@ -46,9 +46,25 @@ Ensure PostgreSQL is running with the following configuration:
 
 > ⚠️ You can modify this configuration in `backend/src/app.module.ts` if needed.
 
+
+
+
 ---
 
 ## Run the Application:
+
+## Setting Permissions for the Script
+## After cloning the repository, you need to give execution permissions to the script:
+
+chmod +x start.sh
+
+## Running the Application
+### You can start the application with a single command using the provided script.
+
+Ensure you're in the root of the project directory:
+## bash: 
+cd my-cloned-repo
+./start.sh
 
 ### Using the Script:
 To simplify the process, you can use the `start.sh` script located in the root directory. This script will:
@@ -57,9 +73,6 @@ To simplify the process, you can use the `start.sh` script located in the root d
 3. Start the backend server and the frontend application.
 
 Run the script with the following command:
-
-## bash: 
-./start.sh
 
 ## Hoy to Use:
 1. Create Notes: Go to Create Note to add new notes.

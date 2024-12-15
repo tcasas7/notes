@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -16,7 +17,7 @@ import { Note } from './notes/note.entity';
       database: 'notes_app',
       entities: [Note],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     NotesModule,
   ],

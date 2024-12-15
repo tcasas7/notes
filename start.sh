@@ -41,6 +41,25 @@ else
   echo "✅ Angular CLI encontrado."
 fi
 
+# Configurar variables de entorno de la base de datos
+echo "⚙️ Configurando variables de entorno de la base de datos..."
+export DB_USER="postgres"
+export DB_PASSWORD="tomas3782"
+export DB_NAME="notes_app"
+export DB_HOST="localhost"
+export DB_PORT="5432"
+
+# Verificar base de datos existente
+echo "🔍 Verificando la base de datos existente..."
+export PGPASSWORD=$DB_PASSWORD
+DB_EXISTS=$(psql -U $DB_USER -h $DB_HOST -p $DB_PORT -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'")
+if [[ "$DB_EXISTS" != "1" ]]; then
+    echo "❌ La base de datos '$DB_NAME' no existe. Por favor, créala manualmente."
+    exit 1
+else
+    echo "✅ Base de datos '$DB_NAME' encontrada."
+fi
+
 # Configurar backend
 echo "⚙️ Configurando backend..."
 cd backend
