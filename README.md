@@ -1,29 +1,32 @@
 # Notes Application
 
-## Description
-This is a web application for note-taking that allows users to:
+## Description:
+This is a web-based note-taking application that allows users to:
 - Create, edit, and delete notes.
 - Archive and unarchive notes.
-- Assign tags to notes and filter them by categories (Phase 2).
+- Assign tags to notes and filter them by categories.
+- Search for notes by title.
 
-The application follows an SPA (Single Page Application) architecture with a separate backend and a relational database.
+The application follows an SPA (Single Page Application) architecture with a separate backend (NestJS) and frontend (Angular).
 
 ---
 
 ## Technologies Used
 
-### Backend
-- **Framework:** [NestJS](https://nestjs.com/)
-- **Language:** TypeScript
-- **Database:** PostgreSQL
-- **ORM:** TypeORM
+### Backend:
+- **Framework**: [NestJS](https://nestjs.com/)
+- **Language**: TypeScript
+- **Database**: PostgreSQL
+- **ORM**: TypeORM
 
-### Frontend
-- **Framework:** Angular (to be implemented in Phase 2).
+### Frontend:
+- **Framework**: [Angular](https://angular.io/)
+- **Language**: TypeScript
+- **UI Library**: Bootstrap 5
 
 ---
 
-## Prerequisites
+## Prerequisites:
 Before running the application, ensure you have the following installed:
 - **Node.js**: v18.17 or higher
 - **npm**: v8.15 or higher
@@ -31,44 +34,56 @@ Before running the application, ensure you have the following installed:
 
 ---
 
-## Project Setup
+## Project Setup:
 
-### Backend
-1. **Install dependencies:**
-   ```bash
-   cd backend
-   npm install
+### Database Configuration:
+Ensure PostgreSQL is running with the following configuration:
+- **Host**: localhost  
+- **Port**: 5432  
+- **Username**: `postgres`  
+- **Password**: `tomas3782`  
+- **Database**: `notes_app`  
 
-2. ## Database configuration: 
-Ensure PostgreSQL is running on your system with the following credentials:
+> ⚠️ You can modify this configuration in `backend/src/app.module.ts` if needed.
 
-**Host**: localhost
-**Port**: 5432
-**User**: postgres
-**Password**: <tomas3782>
-**Database**: notes_app
+---
 
-You can modify this configuration in the file backend/src/app.module.ts.
+## Run the Application:
 
-3. ## Start the server: (bash)
-npm run start
+### Using the Script:
+To simplify the process, you can use the `start.sh` script located in the root directory. This script will:
+1. Install dependencies for both backend and frontend.
+2. Initialize the database schema.
+3. Start the backend server and the frontend application.
 
-The backend will be available at:
+Run the script with the following command:
 
-**Backend URL**: http://localhost:3000
-**API Documentation**: http://localhost:3000/api 
+## bash: 
+./start.sh
 
-**Start the Application**
+## Hoy to Use:
+1. Create Notes: Go to Create Note to add new notes.
+2. View Notes: The active are listed on the homepage. Use search and filter options for better navigation. 
+3. Edit/Delete Notes: Use the respective buttons in each note card. 
+4. Archive/Unarchive Notes: Archive active notes or view archived ones using the navigation Menu. 
 
-To start the application easily, you can use the start.sh script located in the root directory. This script will:
+## Proyect Structure:
 
-1. Install all dependencies for the backend.
-2. Start the backend server.
+notes/
+│
+├── backend/       # Backend (NestJS + PostgreSQL)
+│   ├── src/
+│   ├── package.json
+│   └── ...
+│
+├── frontend/      # Frontend (Angular)
+│   ├── src/
+│   ├── package.json
+│   └── ...
+│
+├── start.sh       # Startup script for the app
+└── README.md      # Documentation
 
-## Run the script with the following command: (bash)
-start.sh 
-
-Once the script completes, the backend will be running at:
-
-**Backend URL**: http://localhost:3000
-**API Documentation**: http://localhost:3000/api
+## Contributors: 
+Developer: Tomas Casas
+GitHub: https://github.com/tcasas7
