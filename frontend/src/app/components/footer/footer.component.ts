@@ -8,9 +8,9 @@ import { CommonModule } from '@angular/common';
       <footer class="footer">
         <div class="container">
           <p>
-            © 2024 Notas App. Todos los derechos reservados.
+            © 2024 Notes App. All rights reserved.
             <br />
-            Desarrollado con <span style="color: red;">❤</span> por el equipo.
+            Developed with <span style="color: red;">❤</span> by Tomas Casas for Ensolvers.
           </p>
           <div class="social-icons">
             <a
