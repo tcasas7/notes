@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -8,7 +9,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Tag } from './tag.entity';
 
-@Entity()
+@Entity('note') // Especificar explícitamente el nombre de la tabla
 export class Note {
   @PrimaryGeneratedColumn()
   @ApiProperty({
@@ -17,21 +18,21 @@ export class Note {
   })
   id: number;
 
-  @Column()
+  @Column({ type: 'character varying' }) // Coincidir con el tipo de la columna en la DB
   @ApiProperty({
     example: 'Título de la nota',
     description: 'El título de la nota',
   })
   title: string;
 
-  @Column()
+  @Column({ type: 'character varying' })
   @ApiProperty({
     example: 'Contenido de la nota',
     description: 'El contenido de la nota',
   })
   content: string;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false }) // Asegurar el tipo booleano
   @ApiProperty({
     example: false,
     description: 'Indica si la nota está archivada o no',
@@ -39,7 +40,7 @@ export class Note {
   })
   isArchived: boolean;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp without time zone', default: () => 'CURRENT_TIMESTAMP' })
   @ApiProperty({
     example: '2024-12-13T12:00:00Z',
     description: 'Fecha de creación de la nota',
@@ -48,7 +49,7 @@ export class Note {
   createdAt: Date;
 
   @Column({
-    type: 'timestamp',
+    type: 'timestamp without time zone',
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
   })
