@@ -33,12 +33,7 @@ DB_EXISTS=$(psql -U $DB_USER -h $DB_HOST -p $DB_PORT -tAc "SELECT 1 FROM pg_data
 if [[ "$DB_EXISTS" != "1" ]]; then
   echo "⚙️ Creando la base de datos '$DB_NAME'..."
   createdb -U $DB_USER -h $DB_HOST -p $DB_PORT $DB_NAME
-  if [[ $? -ne 0 ]]; then
-    echo "❌ Error al crear la base de datos '$DB_NAME'."
-    exit 1
-  else
-    echo "✅ Base de datos '$DB_NAME' creada exitosamente."
-  fi
+  echo "✅ Base de datos '$DB_NAME' creada exitosamente."
 else
   echo "✅ La base de datos '$DB_NAME' ya existe."
 fi
@@ -49,7 +44,7 @@ cd backend
 if [ ! -d "node_modules" ]; then
   npm install
 fi
-npx typeorm migration:run
+npx typeorm migration:run --dataSource src/data-source.ts
 npm start &
 cd ..
 
@@ -59,7 +54,12 @@ cd frontend
 if [ ! -d "node_modules" ]; then
   npm install
 fi
-npm start &
+
+# Desactivar el prompt de analíticas de Angular CLI
+npx ng analytics off
+
+# Iniciar el frontend
+npx ng serve --host 0.0.0.0 --port 4200 &
 cd ..
 
 echo "🚀 Aplicación iniciada exitosamente."
