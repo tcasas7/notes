@@ -38,13 +38,41 @@ else
   echo "✅ La base de datos '$DB_NAME' ya existe."
 fi
 
+# Liberar puertos si están en uso
+function liberar_puerto() {
+  PORT=$1
+  echo "🔍 Verificando si el puerto $PORT está en uso..."
+  if lsof -ti:$PORT &> /dev/null; then
+    echo "⚠️ El puerto $PORT está en uso. Matando el proceso..."
+    lsof -ti:$PORT | xargs kill -9
+    echo "✅ Puerto $PORT liberado."
+  else
+    echo "✅ El puerto $PORT está libre."
+  fi
+}
+
+# Liberar puertos 3000 y 4200
+liberar_puerto 3000
+liberar_puerto 4200
+
 # Configurar backend
 echo "⚙️ Configurando backend..."
 cd backend
 if [ ! -d "node_modules" ]; then
   npm install
 fi
-npx typeorm migration:run --dataSource src/data-source.ts
+
+# Ejecutar migraciones usando ts-node
+echo "⚙️ Ejecutando migraciones..."
+npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts
+if [[ $? -ne 0 ]]; then
+  echo "❌ Error al ejecutar migraciones."
+  exit 1
+fi
+echo "✅ Migraciones ejecutadas correctamente."
+
+# Iniciar backend
+echo "🚀 Iniciando backend..."
 npm start &
 cd ..
 
@@ -56,11 +84,13 @@ if [ ! -d "node_modules" ]; then
 fi
 
 # Desactivar el prompt de analíticas de Angular CLI
+echo "🔧 Desactivando analíticas de Angular CLI..."
 npx ng analytics off
 
 # Iniciar el frontend
+echo "🚀 Iniciando frontend..."
 npx ng serve --host 0.0.0.0 --port 4200 &
 cd ..
 
-echo "🚀 Aplicación iniciada exitosamente."
+echo "✅ Aplicación iniciada exitosamente."
 echo "Accede a la app en: http://localhost:4200"

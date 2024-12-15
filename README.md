@@ -50,9 +50,9 @@ Ensure PostgreSQL is running with the following configuration:
 
 ## Run the Application:
 
-## Setting Permissions for the Script
-## After cloning the repository, you need to give execution permissions to the script:
-
+### Setting Permissions for the Script
+After cloning the repository, you need to give execution permissions to the script:
+### bash
 chmod +x start.sh
 
 ## Running the Application
