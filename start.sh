@@ -1,63 +1,46 @@
 #!/bin/bash
 
-# Comprobación de permisos
-echo "🔍 Verificando permisos..."
-sudo chown -R $(whoami) ~/.npm &> /dev/null
-echo "✅ Permisos de npm reparados."
-
-# Verificar e instalar PostgreSQL
-if ! command -v psql &> /dev/null; then
-  echo "🚨 PostgreSQL no está instalado. Instalando PostgreSQL..."
-  brew install postgresql
-  brew services start postgresql
-else
-  echo "✅ PostgreSQL encontrado."
-fi
-
-# Verificar Node.js y npm
-if ! command -v node &> /dev/null; then
-  echo "🚨 Node.js no está instalado. Por favor instálalo y vuelve a intentarlo."
-  exit 1
-fi
-if ! command -v npm &> /dev/null; then
-  echo "🚨 npm no está instalado. Por favor instálalo y vuelve a intentarlo."
-  exit 1
-fi
-echo "✅ Node.js y npm encontrados."
-
-# Instalar NestJS CLI si no está presente
-if ! command -v nest &> /dev/null; then
-  echo "🚨 NestJS CLI no encontrado. Instalando NestJS CLI..."
-  npm install -g @nestjs/cli
-else
-  echo "✅ NestJS CLI encontrado."
-fi
-
-# Instalar Angular CLI si no está presente
-if ! command -v ng &> /dev/null; then
-  echo "🚨 Angular CLI no encontrado. Instalando Angular CLI..."
-  npm install -g @angular/cli
-else
-  echo "✅ Angular CLI encontrado."
-fi
-
-# Configurar variables de entorno de la base de datos
-echo "⚙️ Configurando variables de entorno de la base de datos..."
+# Configuración de variables de entorno
 export DB_USER="postgres"
 export DB_PASSWORD="tomas3782"
 export DB_NAME="notes_app"
 export DB_HOST="localhost"
 export DB_PORT="5432"
 
-# Verificar base de datos existente
-echo "🔍 Verificando la base de datos existente..."
-export PGPASSWORD=$DB_PASSWORD
-DB_EXISTS=$(psql -U $DB_USER -h $DB_HOST -p $DB_PORT -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'")
-if [[ "$DB_EXISTS" != "1" ]]; then
-    echo "❌ La base de datos '$DB_NAME' no existe. Por favor, créala manualmente."
-    exit 1
+# Verificar PostgreSQL
+echo "🔍 Verificando instalación de PostgreSQL..."
+if ! command -v psql &> /dev/null; then
+  echo "🚨 PostgreSQL no está instalado. Instalándolo..."
+  brew install postgresql
+  brew services start postgresql
 else
-    echo "✅ Base de datos '$DB_NAME' encontrada."
+  echo "✅ PostgreSQL está instalado."
+fi
+
+# Verificar conexión a PostgreSQL
+echo "🔗 Verificando conexión a PostgreSQL..."
+PG_CONNECTION=$(psql -U $DB_USER -h $DB_HOST -p $DB_PORT -c "SELECT version();" 2>&1)
+if [[ $? -ne 0 ]]; then
+  echo "❌ No se pudo conectar a PostgreSQL: $PG_CONNECTION"
+  exit 1
+else
+  echo "✅ Conexión a PostgreSQL establecida."
+fi
+
+# Crear base de datos si no existe
+echo "🔍 Verificando la existencia de la base de datos '$DB_NAME'..."
+DB_EXISTS=$(psql -U $DB_USER -h $DB_HOST -p $DB_PORT -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME';" 2>&1)
+if [[ "$DB_EXISTS" != "1" ]]; then
+  echo "⚙️ Creando la base de datos '$DB_NAME'..."
+  createdb -U $DB_USER -h $DB_HOST -p $DB_PORT $DB_NAME
+  if [[ $? -ne 0 ]]; then
+    echo "❌ Error al crear la base de datos '$DB_NAME'."
+    exit 1
+  else
+    echo "✅ Base de datos '$DB_NAME' creada exitosamente."
+  fi
+else
+  echo "✅ La base de datos '$DB_NAME' ya existe."
 fi
 
 # Configurar backend
@@ -66,6 +49,7 @@ cd backend
 if [ ! -d "node_modules" ]; then
   npm install
 fi
+npx typeorm migration:run
 npm start &
 cd ..
 

@@ -46,9 +46,6 @@ Ensure PostgreSQL is running with the following configuration:
 
 > ⚠️ You can modify this configuration in `backend/src/app.module.ts` if needed.
 
-
-
-
 ---
 
 ## Run the Application:
