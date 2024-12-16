@@ -12,48 +12,26 @@ echo "🔍 Verificando instalación de PostgreSQL..."
 if ! command -v psql &> /dev/null; then
   echo "🚨 PostgreSQL no está instalado. Instalándolo..."
   brew install postgresql
-  brew services start postgresql
-else
-  echo "✅ PostgreSQL está instalado."
 fi
 
-# Verificar conexión a PostgreSQL
-echo "🔗 Verificando conexión a PostgreSQL..."
-PG_CONNECTION=$(psql -U $DB_USER -h $DB_HOST -p $DB_PORT -c "SELECT version();" 2>&1)
-if [[ $? -ne 0 ]]; then
-  echo "❌ No se pudo conectar a PostgreSQL: $PG_CONNECTION"
-  exit 1
-else
-  echo "✅ Conexión a PostgreSQL establecida."
-fi
+echo "🔧 Iniciando servicio PostgreSQL..."
+brew services start postgresql
 
-# Crear base de datos si no existe
-echo "🔍 Verificando la existencia de la base de datos '$DB_NAME'..."
-DB_EXISTS=$(psql -U $DB_USER -h $DB_HOST -p $DB_PORT -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME';" 2>&1)
+# Crear usuario y base de datos si no existen
+echo "🔧 Configurando usuario PostgreSQL..."
+PGPASSWORD=$DB_PASSWORD psql -U postgres -h localhost -p 5432 -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';" 2>/dev/null || echo "⚠️ El usuario ya existe."
+PGPASSWORD=$DB_PASSWORD psql -U postgres -h localhost -p 5432 -c "ALTER USER $DB_USER CREATEDB;"
+
+# Verificar la base de datos
+echo "🔍 Verificando existencia de la base de datos '$DB_NAME'..."
+DB_EXISTS=$(PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -p $DB_PORT -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME';")
 if [[ "$DB_EXISTS" != "1" ]]; then
   echo "⚙️ Creando la base de datos '$DB_NAME'..."
-  createdb -U $DB_USER -h $DB_HOST -p $DB_PORT $DB_NAME
-  echo "✅ Base de datos '$DB_NAME' creada exitosamente."
-else
-  echo "✅ La base de datos '$DB_NAME' ya existe."
+  PGPASSWORD=$DB_PASSWORD createdb -U $DB_USER -h $DB_HOST -p $DB_PORT $DB_NAME
 fi
 
-# Liberar puertos si están en uso
-function liberar_puerto() {
-  PORT=$1
-  echo "🔍 Verificando si el puerto $PORT está en uso..."
-  if lsof -ti:$PORT &> /dev/null; then
-    echo "⚠️ El puerto $PORT está en uso. Matando el proceso..."
-    lsof -ti:$PORT | xargs kill -9
-    echo "✅ Puerto $PORT liberado."
-  else
-    echo "✅ El puerto $PORT está libre."
-  fi
-}
-
-# Liberar puertos 3000 y 4200
-liberar_puerto 3000
-liberar_puerto 4200
+# Esperar unos segundos para que PostgreSQL esté listo
+sleep 3
 
 # Configurar backend
 echo "⚙️ Configurando backend..."
@@ -62,7 +40,7 @@ if [ ! -d "node_modules" ]; then
   npm install
 fi
 
-# Ejecutar migraciones usando ts-node
+# Ejecutar migraciones
 echo "⚙️ Ejecutando migraciones..."
 npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts
 if [[ $? -ne 0 ]]; then

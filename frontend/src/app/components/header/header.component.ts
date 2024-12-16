@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -50,6 +50,13 @@ import { RouterModule } from '@angular/router';
               </a>
             </li>
           </ul>
+
+          <button
+            class="btn btn-outline-danger"
+            (click)="logout()"
+          >
+            Logout
+          </button> 
         </div>
       </div>
     </nav>
@@ -65,7 +72,7 @@ import { RouterModule } from '@angular/router';
       }
       .nav-link.active {
         font-weight: bold;
-        color: #ffc107 !important; /* Amarillo Bootstrap */
+        color: #ffc107 !important; 
       }
       .nav-link {
         transition: color 0.3s;
@@ -76,6 +83,14 @@ import { RouterModule } from '@angular/router';
     `,
   ],
 })
-export class HeaderComponent {}
+export class HeaderComponent {
+
+  constructor(private router: Router) {}
+
+  logout() {
+    localStorage.removeItem('token'); 
+    this.router.navigate(['/login']); 
+  }
+}
 
   
