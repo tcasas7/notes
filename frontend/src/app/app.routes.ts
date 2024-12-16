@@ -2,13 +2,35 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NotesListComponent } from './components/notes-list/notes-list.component';
 import { NotesFormComponent } from './components/notes-form/notes-form.component';
+import { LoginComponent } from './login/login.component'; 
+import { AuthGuard } from './auth.guard';
+
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'notes', pathMatch: 'full' },
-  { path: 'notes', component: NotesListComponent, data: { archived: false} },
-  { path: 'notes/archived', component: NotesListComponent, data: { archived: true } },
-  { path: 'notes/new', component: NotesFormComponent,},
-  { path: 'notes/edit/:id', component: NotesFormComponent },
+  { path: 'login', component: LoginComponent },
+  { path: '', redirectTo: 'login', pathMatch: 'full' }, 
+  {
+    path: 'notes',
+    component: NotesListComponent,
+    canActivate: [AuthGuard], 
+    data: { archived: false },
+  },
+  {
+    path: 'notes/archived',
+    component: NotesListComponent,
+    canActivate: [AuthGuard],
+    data: { archived: true },
+  },
+  {
+    path: 'notes/new',
+    component: NotesFormComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'notes/edit/:id',
+    component: NotesFormComponent,
+    canActivate: [AuthGuard],
+  },
 ];
 
 @NgModule({
@@ -16,4 +38,3 @@ export const routes: Routes = [
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
-

@@ -10,6 +10,7 @@ import {
   HttpCode,
   Patch,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiParam } from '@nestjs/swagger';
 import { NotesService } from './services/notes.service';
@@ -17,10 +18,12 @@ import { CreateNoteDto } from './DTOS/create-note.dto';
 import { UpdateNoteDto } from './DTOS/update-note.dto';
 import { Tag } from './tag.entity';
 import { Note } from './note.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 
 @ApiTags('Notes') 
 @Controller('notes')
+@UseGuards(JwtAuthGuard)
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
