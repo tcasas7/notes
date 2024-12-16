@@ -18,6 +18,7 @@ The application follows an SPA (Single Page Application) architecture with a sep
 - **Language**: TypeScript
 - **Database**: PostgreSQL
 - **ORM**: TypeORM
+- **Authentication**: JWT (JSON Web Token)
 
 ### Frontend:
 - **Framework**: [Angular](https://angular.io/)
@@ -53,6 +54,7 @@ Ensure PostgreSQL is running with the following configuration:
 ### Setting Permissions for the Script
 After cloning the repository, you need to give execution permissions to the script:
 ### bash
+cd my-cloned-repo
 chmod +x start.sh
 
 ## Running the Application
@@ -60,7 +62,6 @@ chmod +x start.sh
 
 Ensure you're in the root of the project directory:
 ## bash: 
-cd my-cloned-repo
 ./start.sh
 
 ### Using the Script:
@@ -72,10 +73,14 @@ To simplify the process, you can use the `start.sh` script located in the root d
 Run the script with the following command:
 
 ## Hoy to Use:
-1. Create Notes: Go to Create Note to add new notes.
-2. View Notes: The active are listed on the homepage. Use search and filter options for better navigation. 
-3. Edit/Delete Notes: Use the respective buttons in each note card. 
-4. Archive/Unarchive Notes: Archive active notes or view archived ones using the navigation Menu. 
+1. Login: 
+Access the application and use the following credentials to log in:
+Username: test
+Password: 1234
+2. Create Notes: Go to Create Note to add new notes.
+3. View Notes: The active are listed on the homepage. Use search and filter options for better navigation. 
+4. Edit/Delete Notes: Use the respective buttons in each note card. 
+5. Archive/Unarchive Notes: Archive active notes or view archived ones using the navigation Menu. 
 
 ## Proyect Structure:
 
@@ -83,16 +88,23 @@ notes/
 │
 ├── backend/       # Backend (NestJS + PostgreSQL)
 │   ├── src/
+│   │   ├── auth/       # Authentication logic
+│   │   ├── notes/      # Notes management
+│   │   ├── migrations/ # Database migrations
 │   ├── package.json
 │   └── ...
 │
 ├── frontend/      # Frontend (Angular)
 │   ├── src/
+│   │   ├── app/
+│   │   │   ├── components/ # UI Components
+│   │   │   ├── services/   # HTTP Services
 │   ├── package.json
 │   └── ...
 │
 ├── start.sh       # Startup script for the app
 └── README.md      # Documentation
+
 
 ## Contributors: 
 Developer: Tomas Casas

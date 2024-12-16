@@ -7,6 +7,19 @@ export DB_NAME="notes_app"
 export DB_HOST="localhost"
 export DB_PORT="5432"
 
+# Función para liberar puertos
+function liberar_puerto() {
+  PORT=$1
+  echo "🔍 Verificando si el puerto $PORT está en uso..."
+  if lsof -ti:$PORT &> /dev/null; then
+    echo "⚠️ El puerto $PORT está en uso. Matando el proceso..."
+    lsof -ti:$PORT | xargs kill -9
+    echo "✅ Puerto $PORT liberado."
+  else
+    echo "✅ El puerto $PORT está libre."
+  fi
+}
+
 # Verificar PostgreSQL
 echo "🔍 Verificando instalación de PostgreSQL..."
 if ! command -v psql &> /dev/null; then
@@ -32,6 +45,10 @@ fi
 
 # Esperar unos segundos para que PostgreSQL esté listo
 sleep 3
+
+# Liberar puertos 3000 y 4200
+liberar_puerto 3000
+liberar_puerto 4200
 
 # Configurar backend
 echo "⚙️ Configurando backend..."
