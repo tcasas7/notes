@@ -3,6 +3,14 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class InitialSchemaFix1734562810058 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+
+    await queryRunner.query(`
+    CREATE TABLE "tag" (
+      "id" SERIAL NOT NULL, 
+      "name" character varying NOT NULL UNIQUE, 
+      CONSTRAINT "PK_8e4052373c579afc1471f526760" PRIMARY KEY ("id")
+    );
+  `);
     
     await queryRunner.query(`
       CREATE TABLE "note" (
