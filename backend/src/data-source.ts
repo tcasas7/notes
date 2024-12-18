@@ -12,9 +12,9 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'notes_app',
   schema: 'public',
   synchronize: false, 
-  logging: false,
+  logging: true,
   entities: [Note, Tag], 
   migrations: ['src/migrations/**/*{.ts,.js}'], 
-  migrationsRun: false,
+  migrationsRun: true,
   subscribers: [],
 });

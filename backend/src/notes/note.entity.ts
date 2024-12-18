@@ -9,7 +9,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Tag } from './tag.entity';
 
-@Entity('note') // Especificar explícitamente el nombre de la tabla
+@Entity('note') 
 export class Note {
   @PrimaryGeneratedColumn()
   @ApiProperty({
@@ -18,7 +18,7 @@ export class Note {
   })
   id: number;
 
-  @Column({ type: 'character varying' }) // Coincidir con el tipo de la columna en la DB
+  @Column({ type: 'character varying' }) 
   @ApiProperty({
     example: 'Título de la nota',
     description: 'El título de la nota',
@@ -32,7 +32,7 @@ export class Note {
   })
   content: string;
 
-  @Column({ type: 'boolean', default: false }) // Asegurar el tipo booleano
+  @Column({ type: 'boolean', default: false }) 
   @ApiProperty({
     example: false,
     description: 'Indica si la nota está archivada o no',

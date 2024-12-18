@@ -2,7 +2,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
 import { Note } from './note.entity';
 
-@Entity()
+@Entity('tag')
 export class Tag {
   @PrimaryGeneratedColumn()
   id: number;

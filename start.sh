@@ -61,10 +61,27 @@ fi
 echo "⚙️ Ejecutando migraciones..."
 npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts
 if [[ $? -ne 0 ]]; then
-  echo "❌ Error al ejecutar migraciones."
+  echo "❌ Error al ejecutar migraciones. Verifica el archivo de migraciones y la conexión a la base de datos."
   exit 1
 fi
 echo "✅ Migraciones ejecutadas correctamente."
+
+# Verificar tablas en la base de datos
+echo "🔍 Verificando existencia de tablas clave..."
+TABLES_EXIST=$(PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -p $DB_PORT -d $DB_NAME -tAc "
+  SELECT EXISTS (
+    SELECT 1 
+    FROM information_schema.tables 
+    WHERE table_name IN ('note', 'tag', 'note_tags_tag')
+  );"
+)
+
+if [[ "$TABLES_EXIST" != "t" ]]; then
+  echo "❌ Las tablas clave no existen en la base de datos. Verifica las migraciones y vuelve a ejecutar el script."
+  exit 1
+else
+  echo "✅ Todas las tablas clave existen en la base de datos."
+fi
 
 # Iniciar backend
 echo "🚀 Iniciando backend..."
