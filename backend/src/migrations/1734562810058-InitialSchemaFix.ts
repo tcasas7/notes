@@ -35,13 +35,12 @@ export class InitialSchemaFix1734562810058 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
    
-    await queryRunner.query(`
-      ALTER TABLE "note_tags_tag" 
-      DROP CONSTRAINT "FK_6e5b1c3234803e65ef062812cf6";
-    `);
+    await queryRunner.query(`ALTER TABLE "note_tags_tag" DROP CONSTRAINT "FK_9f68bc1292e61b17fc1e3b4a8f1";`);
+    await queryRunner.query(`ALTER TABLE "note_tags_tag" DROP CONSTRAINT "FK_6e5b1c3234803e65ef062812cf6";`);
 
     
     await queryRunner.query(`DROP TABLE "note_tags_tag";`);
     await queryRunner.query(`DROP TABLE "note";`);
+    await queryRunner.query(`DROP TABLE "tag";`);
   }
 }
