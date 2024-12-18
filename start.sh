@@ -35,15 +35,16 @@ echo "🔧 Configurando usuario PostgreSQL..."
 PGPASSWORD=$DB_PASSWORD psql -U postgres -h localhost -p 5432 -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';" 2>/dev/null || echo "⚠️ El usuario ya existe."
 PGPASSWORD=$DB_PASSWORD psql -U postgres -h localhost -p 5432 -c "ALTER USER $DB_USER CREATEDB;"
 
-# Verificar la base de datos
 echo "🔍 Verificando existencia de la base de datos '$DB_NAME'..."
 DB_EXISTS=$(PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -p $DB_PORT -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME';")
 if [[ "$DB_EXISTS" != "1" ]]; then
   echo "⚙️ Creando la base de datos '$DB_NAME'..."
   PGPASSWORD=$DB_PASSWORD createdb -U $DB_USER -h $DB_HOST -p $DB_PORT $DB_NAME
+else
+  echo "✅ La base de datos '$DB_NAME' ya existe."
 fi
 
-# Esperar unos segundos para que PostgreSQL esté listo
+# Esperar unos segundos para asegurar que PostgreSQL está listo
 sleep 3
 
 # Liberar puertos 3000 y 4200
@@ -57,21 +58,31 @@ if [ ! -d "node_modules" ]; then
   npm install
 fi
 
-# Verificar si existen migraciones pendientes
-echo "🔍 Verificando migraciones pendientes..."
-MIGRATIONS_PENDING=$(npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d ./src/data-source.ts | grep "has no migrations")
+# Ejecutar migraciones forzadamente
+echo "⚙️ Ejecutando migraciones forzadamente..."
+npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d ./src/data-source.ts || true
+npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts
+if [[ $? -ne 0 ]]; then
+  echo "❌ Error al ejecutar migraciones. Verifica las migraciones y vuelve a ejecutar el script."
+  exit 1
+fi
+echo "✅ Migraciones ejecutadas correctamente."
 
-if [[ -z "$MIGRATIONS_PENDING" ]]; then
-  # Ejecutar migraciones si hay pendientes
-  echo "⚙️ Ejecutando migraciones..."
-  npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts
-  if [[ $? -ne 0 ]]; then
-    echo "❌ Error al ejecutar migraciones. Verifica el archivo de migraciones y la conexión a la base de datos."
-    exit 1
-  fi
-  echo "✅ Migraciones ejecutadas correctamente."
+# Verificar tablas en la base de datos
+echo "🔍 Verificando existencia de tablas clave..."
+TABLES_EXIST=$(PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -p $DB_PORT -d $DB_NAME -tAc "
+  SELECT EXISTS (
+    SELECT 1 
+    FROM information_schema.tables 
+    WHERE table_name IN ('note', 'tag', 'note_tags_tag')
+  );"
+)
+
+if [[ "$TABLES_EXIST" != "t" ]]; then
+  echo "❌ Las tablas clave no existen en la base de datos. Verifica las migraciones y vuelve a ejecutar el script."
+  exit 1
 else
-  echo "✅ No hay migraciones pendientes."
+  echo "✅ Todas las tablas clave existen en la base de datos."
 fi
 
 # Iniciar backend
