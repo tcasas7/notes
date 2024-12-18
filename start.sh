@@ -57,30 +57,21 @@ if [ ! -d "node_modules" ]; then
   npm install
 fi
 
-# Ejecutar migraciones
-echo "⚙️ Ejecutando migraciones..."
-npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts
-if [[ $? -ne 0 ]]; then
-  echo "❌ Error al ejecutar migraciones. Verifica el archivo de migraciones y la conexión a la base de datos."
-  exit 1
-fi
-echo "✅ Migraciones ejecutadas correctamente."
+# Verificar si existen migraciones pendientes
+echo "🔍 Verificando migraciones pendientes..."
+MIGRATIONS_PENDING=$(npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d ./src/data-source.ts | grep "has no migrations")
 
-# Verificar tablas en la base de datos
-echo "🔍 Verificando existencia de tablas clave..."
-TABLES_EXIST=$(PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -h $DB_HOST -p $DB_PORT -d $DB_NAME -tAc "
-  SELECT EXISTS (
-    SELECT 1 
-    FROM information_schema.tables 
-    WHERE table_name IN ('note', 'tag', 'note_tags_tag')
-  );"
-)
-
-if [[ "$TABLES_EXIST" != "t" ]]; then
-  echo "❌ Las tablas clave no existen en la base de datos. Verifica las migraciones y vuelve a ejecutar el script."
-  exit 1
+if [[ -z "$MIGRATIONS_PENDING" ]]; then
+  # Ejecutar migraciones si hay pendientes
+  echo "⚙️ Ejecutando migraciones..."
+  npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts
+  if [[ $? -ne 0 ]]; then
+    echo "❌ Error al ejecutar migraciones. Verifica el archivo de migraciones y la conexión a la base de datos."
+    exit 1
+  fi
+  echo "✅ Migraciones ejecutadas correctamente."
 else
-  echo "✅ Todas las tablas clave existen en la base de datos."
+  echo "✅ No hay migraciones pendientes."
 fi
 
 # Iniciar backend
